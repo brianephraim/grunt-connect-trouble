@@ -3,33 +3,42 @@
 module.exports = function(grunt) {
   //mac uses 0.0.0.0 to share localhost ports, but on windows it breaks, so use localhost on windows
   var myHost = !!process.platform.match(/^win/) ? 'localhost' : '0.0.0.0';
+  // Load grunt tasks automatically from npm_modules folder
+  require('load-grunt-tasks')(grunt);
 
-  grunt.loadNpmTasks('grunt-contrib-connect');
-
-
-
+  //load/register tasks from "task" folder.
 
 
 
   // Project configuration.
   grunt.initConfig({
 
+     
 
+
+    pkg: grunt.file.readJSON('package.json'),
+
+    // Watches files for changes and runs tasks based on the changed files
+    yeoman: {
+      // configurable paths
+      app: './app',
+      distBaseUrl: 'http://s3.amazonaws.com/datehookup/dhspa/deploy/<%= yeoman.distBranch %>/dist/app/',
+      distBranch: 'junk'
+    },
+
+    watch: {
+
+    },
     // The actual grunt server settings
     connect: {
       options: {
-        port: 9001,
+        port: 9000,
         // Change this to '0.0.0.0' to access the server from outside.
         //on mac it's 0.0.0.0.  on windows it's localhost.  because windows fails with 0.0.0.0
         hostname: myHost,
         // livereload: 35729,
       },
-      yeoman: {
-        // configurable paths
-        app: './app',
-        distBaseUrl: 'http://s3.amazonaws.com/datehookup/dhspa/deploy/<%= yeoman.distBranch %>/dist/app/',
-        distBranch: 'junk'
-      },
+
       proxies: [
         {
             context: '/qwer',
@@ -78,10 +87,10 @@ module.exports = function(grunt) {
       ],
       imgserver: {
         options: {
-          port: 9010,
+          port: 9009,
           base: [
             '.tmp',
-            './app'
+            '<%= yeoman.app %>'
           ]
         }
       },
@@ -90,7 +99,7 @@ module.exports = function(grunt) {
           //open: 'http://'+myHost+':9000/dev.html',
           base: [
             '.tmp',
-            './app'
+            '<%= yeoman.app %>'
           ],
 
 
@@ -115,32 +124,29 @@ module.exports = function(grunt) {
           }
         }
       }
-
-
     }
 
-
-
-
   });
-  //CONFIG ABOVE
-  //===================
-  //===================
-  //===================
-  //===================
-  //===================
-  //===================
-  //===================
 
-grunt.registerTask('serve', function (target) {
-    console.log('applicationServer')
+
+
+  //-------------
+  // LOCALHOST SERVER TASK AND SUBTASKS
+
+
+  // Launch application server, setup file watch, setup proxy
+  grunt.registerTask('serve', function (target) {
     grunt.task.run([
-      // 'configureProxies',
       'connect:livereload',
       'connect:imgserver',
-      // 'watch'
+      'watch'
     ]);
   });
+
+
+
+
+
 
 
 
@@ -149,7 +155,6 @@ grunt.registerTask('serve', function (target) {
 
 
 
-    grunt.registerTask('revert', ['shell:gitRevertCommit']);
 
 
 };

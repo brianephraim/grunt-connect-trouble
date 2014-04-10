@@ -46,8 +46,8 @@ module.exports = function(grunt) {
             port: '8086',
             //ws: true,
             https: false,
-            changeOrigin: true,
-            //xforward: false,
+            changeOrigin: false,
+            xforward: false,
             headers: {
                 "x-custom-added-header": 'asdfasdfasdfasdf'
             }
@@ -137,6 +137,7 @@ module.exports = function(grunt) {
   // Launch application server, setup file watch, setup proxy
   grunt.registerTask('serve', function (target) {
     grunt.task.run([
+      'configureProxies',
       'connect:livereload',
       'connect:imgserver',
       'watch'
